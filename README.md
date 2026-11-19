@@ -1,6 +1,6 @@
 # ShopMini - Ứng dụng cửa hàng trực tuyến (BaiTH03)
 
-## Giải thích kiến trúc quản lý State
+## 1. Giải thích kiến trúc quản lý State
 
 Dự án phân tách state theo 3 tầng dựa trên phạm vi sử dụng và tần suất cập nhật dữ liệu:
 
@@ -17,4 +17,44 @@ Dự án phân tách state theo 3 tầng dựa trên phạm vi sử dụng và t
    - **Lý do:**
      - `productsSlice` cần xử lý gọi API bất đồng bộ (`createAsyncThunk`) và cache danh sách sản phẩm dùng chung giữa `HomePage` và `ProductDetailPage`.
      - `cartSlice` có nhiều nghiệp vụ cập nhật phức tạp (`addToCart`, `removeFromCart`, `updateQuantity`, `clearCart`) kèm theo các selector tính toán dữ liệu dẫn xuất (tổng số lượng, tổng tiền) hiển thị đồng thời ở `Header`, `CartPage` và `CheckoutPage`.
-     
+
+## 2. Cấu trúc thư mục dự án
+
+```text
+shop-mini/
+├── public/
+├── src/
+│   ├── app/
+│   │   ├── store.ts                   # Cấu hình Redux store, RootState, AppDispatch
+│   │   └── hooks.ts                   # Typed hooks (useAppDispatch, useAppSelector)
+│   ├── features/
+│   │   ├── products/
+│   │   │   └── productsSlice.ts       # Gọi API sản phẩm bằng createAsyncThunk & xử lý trạng thái
+│   │   └── cart/
+│   │       └── cartSlice.ts           # Quản lý giỏ hàng (thêm, xóa, cập nhật SL) & selectors tổng
+│   ├── contexts/
+│   │   ├── ThemeContext.tsx           # Context giao diện sáng/tối & custom hook useTheme()
+│   │   └── AuthContext.tsx            # Context đăng nhập giả lập & custom hook useAuth()
+│   ├── components/
+│   │   ├── Header.tsx                 # Header dùng chung (số lượng giỏ, user, đổi theme)
+│   │   ├── ProductCard.tsx            # Thẻ hiển thị từng sản phẩm ở trang chủ
+│   │   └── ProtectedRoute.tsx         # Bảo vệ route /checkout & lưu trang trước khi đăng nhập
+│   ├── layouts/
+│   │   └── MainLayout.tsx             # Bố cục chung bọc Header và nội dung các trang
+│   ├── pages/
+│   │   ├── HomePage.tsx               # Trang chủ: Lưới sản phẩm responsive & tìm kiếm theo tên
+│   │   ├── ProductDetailPage.tsx      # Trang chi tiết sản phẩm (/products/:id)
+│   │   ├── CartPage.tsx               # Trang giỏ hàng (/cart)
+│   │   ├── LoginPage.tsx              # Trang đăng nhập (/login)
+│   │   ├── CheckoutPage.tsx           # Trang thanh toán (/checkout)
+│   │   └── NotFoundPage.tsx           # Trang 404 khi nhập sai đường dẫn
+│   ├── types/
+│   │   └── index.ts                   # Khai báo kiểu dữ liệu TypeScript (Product, CartItem, User)
+│   ├── App.tsx                        # Khai báo hệ thống định tuyến (Routes)
+│   ├── index.css                      # CSS giao diện Sáng/Tối & Responsive
+│   └── main.tsx                       # Điểm khởi chạy, bọc Provider, ThemeProvider, AuthProvider, BrowserRouter
+├── index.html
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
